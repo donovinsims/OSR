@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1760115442196,
+      "tag": "0000_curvy_leper_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1760118988406,
+      "tag": "0001_medical_tigra",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1760244018519,
+      "tag": "0002_shocking_dark_phoenix",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1760326800225,
+      "tag": "0003_motionless_spyke",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1760327545450,
+      "tag": "0004_violet_the_liberteens",
+      "breakpoints": true
+    }
+  ]
+}
