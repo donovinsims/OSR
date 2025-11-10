@@ -8,20 +8,19 @@ import Footer from '@/components/sections/footer';
 import { Bookmark, Loader2, ExternalLink, Trash2, Search, Filter } from 'lucide-react';
 import { toast } from 'sonner';
 import type { ApiResponse } from '@/types/api';
-import type { Category } from '@/types/app';
+import type { Category, App } from '@/types/app';
 
-interface Agent {
+// Replace local Agent interface with centralized App-based type + legacy fields
+// to ensure consistency with shared domain types while supporting current API shape.
+type Agent = Partial<App> & {
   id: number;
-  name: string;
-  slug: string;
-  description: string;
-  imageUrl: string;
-  websiteUrl: string;
-  categoryId: number;
-  upvotesCount: number;
-  averageRating: number;
+  slug?: string;
+  imageUrl?: string;
+  categoryId?: number;
+  upvotesCount?: number;
+  averageRating?: number;
   category: Pick<Category, 'id' | 'name' | 'slug'> | null;
-}
+};
 
 interface Bookmark {
   id: number;
@@ -99,8 +98,8 @@ export default function DashboardPage() {
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(agent =>
-        agent.name.toLowerCase().includes(query) ||
-        agent.description?.toLowerCase().includes(query)
+        (agent.name?.toLowerCase().includes(query)) ||
+        (agent.description?.toLowerCase().includes(query))
       );
     }
 
@@ -215,7 +214,7 @@ export default function DashboardPage() {
                   {bookmark.agent.imageUrl && (
                     <img
                       src={bookmark.agent.imageUrl}
-                      alt={bookmark.agent.name}
+                      alt={bookmark.agent.name || 'App'}
                       className="w-full h-40 object-cover rounded-xl mb-4"
                     />
                   )}
@@ -284,7 +283,7 @@ export default function DashboardPage() {
             >
               <option value="all">All Categories</option>
               {categories.map((cat) => (
-                <option key={cat!.id} value={cat!.slug}>
+                <option key={cat!.id} value={(cat as any)!.slug}>
                   {cat!.name}
                 </option>
               ))}
@@ -309,7 +308,7 @@ export default function DashboardPage() {
                     {agent.imageUrl && (
                       <img
                         src={agent.imageUrl}
-                        alt={agent.name}
+                        alt={agent.name || 'App'}
                         className="w-full h-40 object-cover rounded-xl mb-4"
                       />
                     )}

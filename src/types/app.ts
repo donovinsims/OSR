@@ -75,6 +75,8 @@ export interface Category {
   appCount?: number;
   /** Optional snake_case count used by legacy endpoints; prefer appCount */
   agent_count?: number;
+  /** Optional camelCase count used by legacy endpoints; prefer appCount */
+  agentCount?: number;
   /** Optional icon (lucide name, URL, etc.) */
   icon?: string;
   /** Timestamps if available from API/DB */
@@ -94,10 +96,10 @@ export interface App {
   description: string;
   /** Category reference (can be minimal or full) */
   category: Pick<Category, "id" | "name"> | Category;
-  /** Supported platforms */
-  platforms: PlatformType[];
-  /** Monetization tier */
-  tier: TierType;
+  /** Supported platforms (structured for richer UI display) */
+  platforms: Platform[];
+  /** Monetization tier (structured for richer UI display) */
+  tier: Tier;
   /** Where/how the app is distributed */
   distributionMethod: DistributionMethod;
   /** ISO date string when manually verified */
@@ -112,6 +114,21 @@ export interface App {
   websiteUrl?: string;
   /** Optional icon/logo URL */
   iconUrl?: string;
+  /** Optional flags/metrics used in cards/lists */
+  isFeatured?: boolean;
+  isTrending?: boolean;
+  isVerified?: boolean;
+  ratingAverage?: number;
+  ratingCount?: number;
+  upvotes?: number;
+  views?: number;
+}
+
+/**
+ * Resolve a category's app count considering legacy fields from older endpoints.
+ */
+export function resolveCategoryCount(category: Category): number | undefined {
+  return category.appCount ?? category.agentCount ?? category.agent_count;
 }
 
 // Named exports only (no default export)

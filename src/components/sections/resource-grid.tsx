@@ -1,28 +1,30 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { ExternalLink, Star, TrendingUp, Sparkles, Brain, MessageSquare, Code, BarChart3, Loader2, Share2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import type { ApiResponse } from '@/types/api';
+import type { App } from '@/types/app';
 
-interface Agent {
+// ... keep existing code ...
+// align local Agent shape to central App type while accommodating legacy fields from API
+
+type Agent = Partial<App> & {
   id: number;
-  name: string;
-  description: string;
-  category_id: number;
+  category_id?: number;
   category_name?: string;
   logo_url?: string;
   website_url?: string;
-  is_featured: boolean;
-  is_trending: boolean;
-  is_verified: boolean;
-  rating_avg: number;
-  rating_count: number;
-  upvotes: number;
-  views: number;
-}
+  is_featured?: boolean;
+  is_trending?: boolean;
+  is_verified?: boolean;
+  rating_avg?: number;
+  rating_count?: number;
+  upvotes?: number;
+  views?: number;
+};
 
 const categoryIcons: Record<string, LucideIcon> = {
   'Customer Support': MessageSquare,
@@ -69,8 +71,8 @@ const AgentCard = ({ agent }: { agent: Agent }) => {
     
     const shareUrl = agent.website_url || window.location.origin;
     const shareData = {
-      title: agent.name,
-      text: agent.description,
+      title: agent.name || 'App',
+      text: agent.description || '',
       url: shareUrl,
     };
     
@@ -162,7 +164,7 @@ const AgentCard = ({ agent }: { agent: Agent }) => {
               <span className="font-medium text-foreground">{agent.rating_avg?.toFixed(1) || '0.0'}</span>
             </div>
             <div className="text-muted-foreground">
-              {agent.upvotes} upvotes
+              {agent.upvotes ?? 0} upvotes
             </div>
           </div>
           
@@ -190,6 +192,7 @@ const AgentCard = ({ agent }: { agent: Agent }) => {
 
 const ResourceGrid = () => {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -254,7 +257,7 @@ const ResourceGrid = () => {
               <h3 className="text-lg font-semibold text-foreground mb-2">Failed to Load Apps</h3>
               <p className="text-muted-foreground mb-4">{error}</p>
               <button 
-                onClick={() => window.location.reload()}
+                onClick={() => router.refresh()}
                 className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 Try Again
@@ -276,7 +279,7 @@ const ResourceGrid = () => {
               <h3 className="text-lg font-semibold text-foreground mb-2">No Apps Found</h3>
               <p className="text-muted-foreground mb-4">Try adjusting your search or filters</p>
               <button 
-                onClick={() => window.location.href = '/'}
+                onClick={() => router.push('/')}
                 className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 Clear Filters

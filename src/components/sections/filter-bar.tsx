@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import type { Category } from '@/types/app';
+import { resolveCategoryCount } from '@/types/app';
 import type { ApiResponse } from '@/types/api';
 
 function FilterBarContent() {
@@ -116,7 +117,7 @@ function FilterBarContent() {
             }`}
           >
             {category.name}
-            {(category.agent_count !== undefined || (category as any).agentCount !== undefined) && (
+            {resolveCategoryCount(category) !== undefined && (
               <span
                 className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
                   activeFilter === category.id.toString()
@@ -124,7 +125,7 @@ function FilterBarContent() {
                     : 'bg-background text-muted-foreground'
                 }`}
               >
-                {(category as any).agentCount ?? category.agent_count}
+                {resolveCategoryCount(category)}
               </span>
             )}
           </button>
