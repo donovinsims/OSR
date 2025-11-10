@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ExternalLink, Star, TrendingUp, Sparkles, Brain, MessageSquare, Code, BarChart3, Loader2, Share2 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import type { ApiResponse } from '@/types/api';
 
 interface Agent {
   id: number;
@@ -22,7 +24,7 @@ interface Agent {
   views: number;
 }
 
-const categoryIcons: Record<string, any> = {
+const categoryIcons: Record<string, LucideIcon> = {
   'Customer Support': MessageSquare,
   'Coding & Dev': Code,
   'Content Creation': Sparkles,
@@ -215,8 +217,8 @@ const ResourceGrid = () => {
           throw new Error('Failed to fetch apps');
         }
         
-        const data = await response.json();
-        setAgents(data.agents || []);
+        const payload = await response.json() as ApiResponse<Agent[]> | { data?: Agent[]; agents?: Agent[]; items?: Agent[] };
+        setAgents(payload.data ?? payload.agents ?? payload.items ?? []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {

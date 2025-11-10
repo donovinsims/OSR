@@ -24,13 +24,17 @@ export async function GET(request: NextRequest) {
       .from(categories)
       .orderBy(asc(categories.name));
 
-    return NextResponse.json(categoriesWithCount, { status: 200 });
+    // Return standardized ApiResponse shape
+    return NextResponse.json({ success: true, data: categoriesWithCount }, { status: 200 });
   } catch (error) {
     console.error('GET error:', error);
     return NextResponse.json(
       { 
-        error: 'Internal server error: ' + error,
-        code: 'INTERNAL_ERROR'
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Internal server error: ' + error,
+        }
       },
       { status: 500 }
     );

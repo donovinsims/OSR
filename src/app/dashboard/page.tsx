@@ -7,6 +7,8 @@ import Navigation from '@/components/sections/navigation';
 import Footer from '@/components/sections/footer';
 import { Bookmark, Loader2, ExternalLink, Trash2, Search, Filter } from 'lucide-react';
 import { toast } from 'sonner';
+import type { ApiResponse } from '@/types/api';
+import type { Category } from '@/types/app';
 
 interface Agent {
   id: number;
@@ -18,11 +20,7 @@ interface Agent {
   categoryId: number;
   upvotesCount: number;
   averageRating: number;
-  category: {
-    id: number;
-    name: string;
-    slug: string;
-  } | null;
+  category: Pick<Category, 'id' | 'name' | 'slug'> | null;
 }
 
 interface Bookmark {
@@ -85,8 +83,8 @@ export default function DashboardPage() {
     try {
       const res = await fetch('/api/agents?pageSize=50');
       if (res.ok) {
-        const data = await res.json();
-        setAllAgents(data.data);
+        const payload = await res.json() as ApiResponse<Agent[]> | { data?: Agent[]; items?: Agent[]; agents?: Agent[] };
+        setAllAgents(payload.data ?? payload.items ?? payload.agents ?? []);
       }
     } catch (error) {
       console.error('Error loading agents:', error);

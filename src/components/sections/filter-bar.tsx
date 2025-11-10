@@ -3,13 +3,8 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, SlidersHorizontal } from 'lucide-react';
-
-interface Category {
-  id: number;
-  name: string;
-  slug: string;
-  agent_count?: number;
-}
+import type { Category } from '@/types/app';
+import type { ApiResponse } from '@/types/api';
 
 function FilterBarContent() {
   const router = useRouter();
@@ -23,8 +18,12 @@ function FilterBarContent() {
       try {
         const response = await fetch('/api/categories');
         if (response.ok) {
-          const data = await response.json();
-          setCategories(data.categories || []);
+          const payload = await response.json() as ApiResponse<Category[]> | Category[] | { categories?: Category[] };
+          // Accept both legacy array response and new ApiResponse shape
+          const items: Category[] = Array.isArray(payload)
+            ? payload
+            : (payload as ApiResponse<Category[]>).data || (payload as any)?.categories || [];
+          setCategories(items);
         }
       } catch (error) {
         console.error('Failed to fetch categories:', error);
@@ -117,7 +116,7 @@ function FilterBarContent() {
             }`}
           >
             {category.name}
-            {category.agent_count !== undefined && (
+            {(category.agent_count !== undefined || (category as any).agentCount !== undefined) && (
               <span
                 className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
                   activeFilter === category.id.toString()
@@ -125,7 +124,7 @@ function FilterBarContent() {
                     : 'bg-background text-muted-foreground'
                 }`}
               >
-                {category.agent_count}
+                {(category as any).agentCount ?? category.agent_count}
               </span>
             )}
           </button>
